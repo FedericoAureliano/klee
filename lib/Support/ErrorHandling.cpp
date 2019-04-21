@@ -53,6 +53,8 @@ static bool shouldSetColor(const char *pfx, const char *msg,
 
 static void klee_vfmessage(FILE *fp, const char *pfx, const char *msg,
                            va_list ap) {
+  return;
+  
   if (!fp)
     return;
 

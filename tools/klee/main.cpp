@@ -1549,7 +1549,7 @@ int main(int argc, char **argv, char **envp) {
                              /*bold=*/true,
                              /*bg=*/false);
 
-  llvm::errs() << stats.str();
+  // llvm::errs() << stats.str();
 
   if (useColors)
     llvm::errs().resetColor();

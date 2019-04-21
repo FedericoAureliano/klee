@@ -530,12 +530,13 @@ void SpecialFunctionHandler::handlePrintExpr(ExecutionState &state,
          "invalid number of arguments to klee_print_expr");
 
   std::string msg_str = readStringAtAddress(state, arguments[0]);
-  llvm::errs() << msg_str << "\n";
-  llvm::errs() << arguments[1] << "\n";
+  llvm::errs() << "\nEffect: (Eq " << msg_str << " " << arguments[1] << ")\n";
+  llvm::errs() << "Partition: (And ";
   for (ConstraintManager::const_iterator i = state.constraints.begin();
        i != state.constraints.end(); i++) {
-    llvm::errs() << *i << "\n";
+    llvm::errs() << *i << " ";
   }
+  llvm::errs() << " )\n";
 }
 
 void SpecialFunctionHandler::handleSetForking(ExecutionState &state,
