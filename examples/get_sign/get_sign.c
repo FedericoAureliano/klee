@@ -4,18 +4,23 @@
 
 #include <klee/klee.h>
 
-int get_sign(int x) {
-  if (x == 0)
-     return 0;
-  
-  if (x < 0)
-     return -1;
-  else 
-     return 1;
-} 
-
 int main() {
-  int a;
-  klee_make_symbolic(&a, sizeof(a), "a");
-  return get_sign(a);
+   int x;
+   klee_make_symbolic(&x, sizeof(x), "x");
+   // klee_assume(x == 1);
+   if (x == 0) {
+     klee_print_expr("x", x);
+     klee_print_expr("RETURN", x);
+     return x;
+  }
+  if (x < 0) {
+    klee_print_expr("x", x);
+    klee_print_expr("RETURN", -x);
+    return -x;
+  }
+  else {
+    klee_print_expr("x", x);
+    klee_print_expr("RETURN", 1);
+    return 1;
+  }
 } 

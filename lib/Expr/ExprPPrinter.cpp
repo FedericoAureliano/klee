@@ -434,11 +434,12 @@ public:
   /* Public utility functions */
 
   void printSeparator(PrintContext &PC, bool simple, unsigned indent) {
-    if (simple || forceNoLineBreaks) {
-      PC << ' ';
-    } else {
-      PC.breakLine(indent);
-    }
+    PC << ' ';
+    // if (simple || forceNoLineBreaks) {
+    //   PC << ' ';
+    // } else {
+    //   PC.breakLine(indent);
+    // }
   }
 };
 
