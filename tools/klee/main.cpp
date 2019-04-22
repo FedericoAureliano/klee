@@ -598,6 +598,8 @@ void KleeHandler::processTestCase(const ExecutionState &state,
     m_interpreter->prepareForEarlyExit();
     klee_error("EXITING ON ERROR:\n%s\n", errorMessage);
   }
+
+  state.dumpSummary(llvm::errs());
 }
 
   // load a .path file

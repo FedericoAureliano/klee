@@ -357,6 +357,20 @@ bool ExecutionState::merge(const ExecutionState &b) {
   return true;
 }
 
+void ExecutionState::dumpSummary(llvm::raw_ostream &out) const {
+  out << "Partition: (And ";
+  for (ConstraintManager::const_iterator i = constraints.begin();
+       i != constraints.end(); i++) {
+    out << *i << " ";
+  }
+  out << "\b)\n";
+  for (unsigned i = 0; i != symbolics.size(); ++i) {
+    const MemoryObject *mo = symbolics[i].first;
+    const ObjectState *os = addressSpace.findObject(mo);
+    out << "Effect: " << mo->name << " = " << os->read(0, 32) << "\n";
+  }
+}
+
 void ExecutionState::dumpStack(llvm::raw_ostream &out) const {
   unsigned idx = 0;
   const KInstruction *target = prevPC;
