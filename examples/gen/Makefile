@@ -16,7 +16,7 @@ foo: foo.c
 	$(KLEE) -entry-point=foo foo.cil.bc 
 
 get_sign: get_sign.c
-	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=get_sign get_sign.c
+	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=get_sign --assume="x == 2" get_sign.c
 	$(CLANG) -emit-llvm -c get_sign.cil.c
 	$(KLEE) -entry-point=get_sign get_sign.cil.bc 
 

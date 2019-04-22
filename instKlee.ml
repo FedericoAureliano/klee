@@ -1,6 +1,6 @@
 open Cil
 open Feature
-open Printf
+open Formatcil
 
 module E = Errormsg
 module H = Hashtbl
@@ -9,6 +9,8 @@ module S = String
 
 (* default entry function name *)
 let entryName = ref "entry"
+(* default assumption *)
+let cond = ref "1"
 
 (* function name constants *)
 let kleeMakeSymbolicName = "klee_make_symbolic"
@@ -64,28 +66,36 @@ let makeKleeAssumeFunction () : varinfo =
     end
 
 (* call klee_assume *)
-let mkAssume (x : varinfo) : instr =
+let mkAssume (e : exp) : instr =
   let p: varinfo = makeKleeAssumeFunction () in
-  Call(None, Lval(var p), [Lval(var x)], !currentLoc)
+  Call(None, Lval(var p), [e], !currentLoc)
 
 
 let instKlee (f : file) : unit =
   match findFunc f !entryName with
   | Some entry ->
     (*Iterate over foramls of types we can handle*)
-    L.map (fun formal ->
+    let argList = L.map (fun formal ->
       (* make each argument a local variable *)
-      let lv = makeLocalVar entry formal.vname formal.vtype in
-      (* make each argument symbolic *)
+      makeLocalVar entry formal.vname formal.vtype) 
+    entry.sformals; in
+
+    (* Add assumption *)
+    let args = (L.combine 
+      (L.map (fun a -> a.vname) argList) 
+      (L.map (fun a -> Fv a) argList)) in
+    let expr = (cExp !cond args) in
+    let pExprCalls = mkAssume expr in
+    entry.sbody.bstmts <- compactStmts 
+      ([mkStmt (Instr [pExprCalls])] @ entry.sbody.bstmts);
+
+    (* make each argument symbolic *)
+    L.iter (fun formal ->
       entry.sbody.bstmts <- compactStmts (
-        [mkStmt
-            (Instr
-              [(mkMakeSymbolic(lv))])
-        ] @ entry.sbody.bstmts
-        );
-      formal
-      ) entry.sformals;
-    
+        [mkStmt (Instr [(mkMakeSymbolic(formal))])] 
+        @ entry.sbody.bstmts)) argList;
+
+    (* Remove arguments to function---they are now locals *)
     setFormals entry [];
 
     let a = makeKleeAssumeFunction () in
@@ -105,7 +115,10 @@ let feature : Feature.t = {
   fd_description = "instrument program with KLEE intrinsics";
   fd_extraopt = [("--entry",
                   Arg.String (fun s -> entryName := s),
-                  " the name of the entry")];
+                  " the name of the entry");
+                 ("--assume",
+                  Arg.String (fun s -> cond := s),
+                  " the assumption to satisfy ")];
   fd_doit = instKlee;
   fd_post_check = true;
 }
