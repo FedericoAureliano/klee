@@ -536,7 +536,7 @@ void SpecialFunctionHandler::handlePrintExpr(ExecutionState &state,
        i != state.constraints.end(); i++) {
     llvm::errs() << *i << " ";
   }
-  llvm::errs() << " )\n";
+  llvm::errs() << ")\n";
 }
 
 void SpecialFunctionHandler::handleSetForking(ExecutionState &state,

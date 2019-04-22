@@ -199,7 +199,7 @@ private:
   }
 
   void printWidth(PrintContext &PC, ref<Expr> e) {
-    if (!shouldPrintWidth(e))
+    if (true || !shouldPrintWidth(e))
       return;
 
     if (PCWidthAsArg) {
@@ -295,8 +295,8 @@ private:
 #endif
 
   void printRead(const ReadExpr *re, PrintContext &PC, unsigned indent) {
-    print(re->index, PC);
-    printSeparator(PC, isVerySimple(re->index), indent);
+    // print(re->index, PC);
+    // printSeparator(PC, isVerySimple(re->index), indent);
     printUpdateList(re->updates, PC);
   }
 
@@ -397,21 +397,21 @@ public:
         // or they are (base + offset) and base will get printed with
         // a declaration.
         if (PCMultibyteReads && e->getKind() == Expr::Concat) {
-	  const ReadExpr *base = hasOrderedReads(e, -1);
-	  const bool isLSB = (base != nullptr);
-	  if (!isLSB)
-	    base = hasOrderedReads(e, 1);
-	  if (base) {
-	    PC << "(Read" << (isLSB ? "LSB" : "MSB");
-	    printWidth(PC, e);
-	    PC << ' ';
-	    printRead(base, PC, PC.pos);
-	    PC << ')';
-	    return;
-	  }
+          const ReadExpr *base = hasOrderedReads(e, -1);
+          const bool isLSB = (base != nullptr);
+          if (!isLSB)
+            base = hasOrderedReads(e, 1);
+          if (base) {
+            // PC << "(Read" << (isLSB ? "LSB" : "MSB");
+            // printWidth(PC, e);
+            // PC << ' ';
+            printRead(base, PC, PC.pos);
+            // PC << ')';
+            return;
+          }
         }
 
-	PC << '(' << e->getKind();
+        PC << '(' << e->getKind();
         printWidth(PC, e);
         PC << ' ';
 
@@ -423,9 +423,9 @@ public:
         } else if (const ExtractExpr *ee = dyn_cast<ExtractExpr>(e)) {
           printExtract(ee, PC, indent);
         } else if (e->getKind() == Expr::Concat || e->getKind() == Expr::SExt)
-	  printExpr(e.get(), PC, indent, true);
-	else
-          printExpr(e.get(), PC, indent);	
+          printExpr(e.get(), PC, indent, true);
+        else
+          printExpr(e.get(), PC, indent);
         PC << ")";
       }
     }
