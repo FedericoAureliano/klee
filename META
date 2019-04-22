@@ -1,0 +1,4 @@
+version = "0.1"
+description = "path generalization instrumentation"
+archive(byte,plugin) = "instklee.cma"
+archive(native,plugin) = "instklee.cmxs"
