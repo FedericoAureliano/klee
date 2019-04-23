@@ -23,6 +23,7 @@ namespace klee {
     ExprPPrinter() {}
     
   public:
+
     static ExprPPrinter *create(llvm::raw_ostream &os);
 
     virtual ~ExprPPrinter() {}
@@ -71,6 +72,8 @@ namespace klee {
                            const Array * const* evalArraysBegin = 0,
                            const Array * const* evalArraysEnd = 0,
                            bool printArrayDecls = true);
+
+    const char *getKeyword(Expr::Kind k);
   };
 
 }

@@ -380,14 +380,14 @@ public:
     if (ConstantExpr *CE = dyn_cast<ConstantExpr>(e))
       printConst(CE, PC, printConstWidth);
     else {
-      std::map<ref<Expr>, unsigned>::iterator it = bindings.find(e);
-      if (it!=bindings.end()) {
-        PC << 'N' << it->second;
-      } else {
-        if (!hasScan || shouldPrint.count(e)) {
-          PC << 'N' << counter << ':';
-          bindings.insert(std::make_pair(e, counter++));
-        }
+      // std::map<ref<Expr>, unsigned>::iterator it = bindings.find(e);
+      // if (it!=bindings.end()) {
+      //   PC << 'N' << it->second;
+      // } else {
+      //   if (!hasScan || shouldPrint.count(e)) {
+      //     PC << 'N' << counter << ':';
+      //     bindings.insert(std::make_pair(e, counter++));
+      //   }
 
         // Detect multibyte reads.
         // FIXME: Hrm. One problem with doing this is that we are
@@ -411,23 +411,33 @@ public:
           }
         }
 
-        PC << '(' << e->getKind();
-        printWidth(PC, e);
-        PC << ' ';
 
-        // Indent at first argument and dispatch to appropriate print
-        // routine for exprs which require special handling.
-        unsigned indent = PC.pos;
-        if (const ReadExpr *re = dyn_cast<ReadExpr>(e)) {
-          printRead(re, PC, indent);
-        } else if (const ExtractExpr *ee = dyn_cast<ExtractExpr>(e)) {
-          printExtract(ee, PC, indent);
-        } else if (e->getKind() == Expr::Concat || e->getKind() == Expr::SExt)
-          printExpr(e.get(), PC, indent, true);
-        else
-          printExpr(e.get(), PC, indent);
-        PC << ")";
-      }
+        if (e->getNumKids() == 2) {
+          PC << '(';
+          print(e->getKid(0), PC);
+          PC << " " << getKeyword(e->getKind()) << " ";
+          print(e->getKid(1), PC);
+          PC << ')';
+        } else {
+          PC << e->getKind() << "(";
+          // printWidth(PC, e);
+          // PC << ' ';
+
+          // Indent at first argument and dispatch to appropriate print
+          // routine for exprs which require special handling.
+          unsigned indent = PC.pos;
+          if (const ReadExpr *re = dyn_cast<ReadExpr>(e)) {
+            printRead(re, PC, indent);
+          } else if (const ExtractExpr *ee = dyn_cast<ExtractExpr>(e)) {
+            printExtract(ee, PC, indent);
+          } else if (e->getKind() == Expr::Concat || e->getKind() == Expr::SExt)
+            printExpr(e.get(), PC, indent, true);
+          else
+            printExpr(e.get(), PC, indent);
+          PC << ")";
+        }
+
+      // }
     }
   }
 
@@ -578,4 +588,72 @@ void ExprPPrinter::printQuery(llvm::raw_ostream &os,
 
   PC << ')';
   PC.breakLine();
+}
+
+const char *ExprPPrinter::getKeyword(Expr::Kind k) {
+  switch (k) {
+  case Expr::Read:
+    return "select";
+  case Expr::Select:
+    return "ite";
+  case Expr::Concat:
+    return "concat";
+  case Expr::Extract:
+    return "extract";
+  case Expr::ZExt:
+    return "zero_extend";
+  case Expr::SExt:
+    return "sign_extend";
+
+  case Expr::Add:
+    return "+";
+  case Expr::Sub:
+    return "-";
+  case Expr::Mul:
+    return "*";
+  case Expr::UDiv:
+    return "bvudiv";
+  case Expr::SDiv:
+    return "/";
+  case Expr::URem:
+    return "%";
+  case Expr::SRem:
+    return "bvsrem";
+
+  /* And, Xor, Not and Or are not handled here because there different versions
+   * for different sorts. See printLogicalOrBitVectorExpr()
+   */
+
+  case Expr::Shl:
+    return "bvshl";
+  case Expr::LShr:
+    return "bvlshr";
+  // AShr is not supported here. See printAShrExpr()
+
+  case Expr::Eq:
+    return "==";
+  case Expr::Ne:
+    return "!=";
+
+  case Expr::Ult:
+    return "bvult";
+  case Expr::Ule:
+    return "bvule";
+  case Expr::Ugt:
+    return "bvugt";
+  case Expr::Uge:
+    return "bvuge";
+
+  case Expr::Slt:
+    return "<";
+  case Expr::Sle:
+    return "<=";
+  case Expr::Sgt:
+    return ">";
+  case Expr::Sge:
+    return ">=";
+
+  default:
+    llvm_unreachable("Conversion from Expr to SMTLIB keyword failed");
+  }
 }
