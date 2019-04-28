@@ -419,7 +419,7 @@ public:
           print(e->getKid(1), PC);
           PC << ')';
         } else {
-          PC << e->getKind() << "(";
+          PC << getKeyword(e->getKind());
           // printWidth(PC, e);
           // PC << ' ';
 
@@ -434,7 +434,7 @@ public:
             printExpr(e.get(), PC, indent, true);
           else
             printExpr(e.get(), PC, indent);
-          PC << ")";
+          // PC << ")";
         }
 
       // }
@@ -601,9 +601,11 @@ const char *ExprPPrinter::getKeyword(Expr::Kind k) {
   case Expr::Extract:
     return "extract";
   case Expr::ZExt:
-    return "zero_extend";
+    // return "zero_extend";
+    return "";
   case Expr::SExt:
-    return "sign_extend";
+    // return "sign_extend";
+    return "";
 
   case Expr::Add:
     return "+";
@@ -620,15 +622,14 @@ const char *ExprPPrinter::getKeyword(Expr::Kind k) {
   case Expr::SRem:
     return "bvsrem";
 
-  /* And, Xor, Not and Or are not handled here because there different versions
-   * for different sorts. See printLogicalOrBitVectorExpr()
-   */
-
+  case Expr::And:
+    return "&";
+  case Expr::Or:
+    return "|";
   case Expr::Shl:
     return "bvshl";
   case Expr::LShr:
     return "bvlshr";
-  // AShr is not supported here. See printAShrExpr()
 
   case Expr::Eq:
     return "==";

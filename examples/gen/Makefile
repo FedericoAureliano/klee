@@ -11,7 +11,7 @@ export CIL_FEATURES=cil.oneret
 .PHONY: all clean
 
 foo: foo.c
-	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=foo --assume="b < 5" foo.c
+	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=foo --assume="b < 5 & a == 7" foo.c
 	$(CLANG) -emit-llvm -c foo.cil.c
 	$(KLEE) -entry-point=foo foo.cil.bc 
 
