@@ -358,12 +358,12 @@ bool ExecutionState::merge(const ExecutionState &b) {
 }
 
 void ExecutionState::dumpSummary(llvm::raw_ostream &out) const {
-  out << "Partition: ";
-  for (ConstraintManager::const_iterator i = constraints.begin();
-       i != constraints.end(); i++) {
-    out << *i << " & ";
-  }
-  out << "\b\b\b)  \n";
+  // out << "Partition: ";
+  // for (ConstraintManager::const_iterator i = constraints.begin();
+  //      i != constraints.end(); i++) {
+  //   out << *i << " & ";
+  // }
+  // out << "\b\b\b)  \n";
   for (unsigned i = 0; i != symbolics.size(); ++i) {
     const MemoryObject *mo = symbolics[i].first;
     const ObjectState *os = addressSpace.findObject(mo);
