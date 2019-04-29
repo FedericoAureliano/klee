@@ -13,12 +13,12 @@ export CIL_FEATURES=cil.oneret
 foo: foo.c
 	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=foo --assume="b == 5 & a == 7" foo.c
 	$(CLANG) -emit-llvm -c foo.cil.c
-	$(KLEE) -entry-point=foo foo.cil.bc 
+	$(KLEE) -entry-point=foo -single-path=true foo.cil.bc 
 
 get_sign: get_sign.c
-	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=get_sign --assume="x == 0 & z == 7" get_sign.c
+	$(CILLY) $(COPTS) --save-temps --noPrintLn -c --load=$(INSTKLEE) --doinstKlee --entry=get_sign --assume="x > 5 & z < -7" get_sign.c
 	$(CLANG) -emit-llvm -c get_sign.cil.c
-	$(KLEE) -entry-point=get_sign get_sign.cil.bc 
+	$(KLEE) -entry-point=get_sign -search=dfs get_sign.cil.bc 
 
 clean:
 	rm -rf *.o *.i *.cil.* klee-*

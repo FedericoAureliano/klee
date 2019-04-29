@@ -159,7 +159,7 @@ namespace {
   WarnAllExternals("warn-all-external-symbols",
                    cl::desc("Issue a warning on startup for all external symbols (default=false)."),
                    cl::cat(StartCat));
-  
+
 
   /*** Linking options ***/
 

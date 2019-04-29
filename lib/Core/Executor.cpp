@@ -152,6 +152,10 @@ cl::opt<bool>
                                   "querying the solver (default=true)"),
                          cl::cat(SolvingCat));
 
+cl::opt<bool>
+    SinglePath("single-path", cl::init(false),
+                         cl::desc("Generalize from a concrete path set in assume (default=false)."),
+                         cl::cat(SolvingCat));
 
 /*** External call policy options ***/
 
@@ -1016,7 +1020,9 @@ Executor::fork(ExecutionState &current, ref<Expr> condition, bool isInternal) {
   // search ones. If that makes sense.
   if (res==Solver::True) {
     if (!isInternal) {
-      llvm::errs() << "Condition: " << condition << "\n";
+      if (SinglePath) {
+        llvm::errs() << "Condition: " << condition << "\n";
+      }
       if (pathWriter) {
         current.pathOS << "1";
       }
@@ -1025,7 +1031,9 @@ Executor::fork(ExecutionState &current, ref<Expr> condition, bool isInternal) {
     return StatePair(&current, 0);
   } else if (res==Solver::False) {
     if (!isInternal) {
-      llvm::errs() << "Condition: " << Expr::createIsZero(condition) << "\n";
+      if (SinglePath) {
+        llvm::errs() << "Condition: " << Expr::createIsZero(condition) << "\n";
+      }
       if (pathWriter) {
         current.pathOS << "0";
       }
