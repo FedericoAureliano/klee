@@ -289,6 +289,12 @@ namespace {
            cl::desc("Link the llvm libc++ library into the bitcode (default=false)"),
            cl::init(false),
            cl::cat(LinkCat));
+
+  cl::opt<bool>
+  Print_PE("display-pe",
+           cl::desc("print partition effect (default=true)"),
+           cl::init(true),
+           cl::cat(LinkCat));
 }
 
 namespace klee {
@@ -598,8 +604,9 @@ void KleeHandler::processTestCase(const ExecutionState &state,
     m_interpreter->prepareForEarlyExit();
     klee_error("EXITING ON ERROR:\n%s\n", errorMessage);
   }
-
-  state.dumpSummary(llvm::errs());
+  if (Print_PE && errorSuffix != "early"){
+    state.dumpSummary(llvm::errs());
+  }
 }
 
   // load a .path file
