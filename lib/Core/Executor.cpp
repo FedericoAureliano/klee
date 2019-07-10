@@ -1113,7 +1113,6 @@ Executor::fork(ExecutionState &current, ref<Expr> condition, bool isInternal) {
     if (MaxDepth && MaxDepth<=trueState->depth) {
       terminateStateEarly(*trueState, "max-depth exceeded.");
       terminateStateEarly(*falseState, "max-depth exceeded.");
-      fprintf(stderr, "Early termination \n");
       return StatePair(0, 0);
     }
 
@@ -3083,6 +3082,7 @@ void Executor::terminateStateEarly(ExecutionState &state,
       (AlwaysOutputSeeds && seedMap.count(&state)))
     interpreterHandler->processTestCase(state, (message + "\n").str().c_str(),
                                         "early");
+  fprintf(stderr, "Early termination \n");
   terminateState(state);
 }
 

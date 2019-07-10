@@ -589,9 +589,10 @@ void KleeHandler::processTestCase(const ExecutionState &state,
       }
     }
 
-    if (m_numGeneratedTests == MaxTests)
+    if (m_numGeneratedTests == MaxTests){
       m_interpreter->setHaltExecution(true);
-
+      fprintf(stderr, "Early termination \n");
+    }
     if (WriteTestInfo) {
       time::Span elapsed_time(time::getWallTime() - start_time);
       auto f = openTestFile("info", id);
